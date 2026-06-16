@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
+<title>ZYNA — Fashion Store</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--black:#1a1a1a;--white:#fff;--gray:#888;--light:#f5f5f5;--border:#ebebeb;--red:#e53935;--pink:#e91e8c;--gold:#f5a623;--H:50px;--T:40px;--B:58px}
+html,body{font-family:'Inter',sans-serif;background:var(--light);color:var(--black);max-width:480px;margin:0 auto;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+img{display:block;width:100%;object-fit:cover}
+button{font-family:inherit;cursor:pointer;border:none;outline:none}
+
+/* HEADER */
+.hdr{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;height:var(--H);background:var(--black);display:flex;align-items:center;justify-content:space-between;padding:0 10px;z-index:200}
+.hdr-l,.hdr-r{display:flex;align-items:center}
+.hdr-logo{font-size:22px;font-weight:900;color:#fff;letter-spacing:4px;position:absolute;left:50%;transform:translateX(-50%)}
+.iBtn{background:none;color:#fff;padding:8px;display:flex;align-items:center;justify-content:center;position:relative}
+.iBtn svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:2}
+.badge{position:absolute;top:2px;right:2px;background:var(--red);color:#fff;font-size:9px;font-weight:700;min-width:16px;height:16px;border-radius:8px;display:none;align-items:center;justify-content:center;padding:0 3px}
+.badge.on{display:flex}
+
+/* SEARCH */
+.srchBar{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;height:var(--H);background:var(--black);display:none;align-items:center;gap:8px;padding:8px 12px;z-index:201}
+.srchBar.open{display:flex}
+.srchBar input{flex:1;padding:10px 14px;border:none;border-radius:20px;font-size:14px;outline:none;background:rgba(255,255,255,0.15);color:#fff}
+.srchBar input::placeholder{color:rgba(255,255,255,0.5)}
+.srchBar button{background:none;color:#fff;font-size:20px;padding:4px}
+.srchRes{position:fixed;top:var(--H);left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:#fff;z-index:199;max-height:60vh;overflow-y:auto;display:none;box-shadow:0 4px 20px rgba(0,0,0,0.15)}
+.srchRes.open{display:block}
+.srchItem{display:flex;align-items:center;gap:12px;padding:10px 14px;border-bottom:1px solid var(--border);cursor:pointer}
+.srchItem:hover{background:var(--light)}
+.srchItem-img{width:50px;height:50px;border-radius:6px;overflow:hidden;flex-shrink:0}
+.srchItem-name{font-size:13px;font-weight:600;margin-bottom:3px}
+.srchItem-price{font-size:13px;color:var(--red);font-weight:700}
+.srch-none{padding:24px;text-align:center;color:var(--gray);font-size:14px}
+
+/* TABS */
+.tabs{position:fixed;top:var(--H);left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:var(--black);z-index:199;border-bottom:1px solid #333}
+.tabs-track{display:flex;overflow-x:auto;scrollbar-width:none;padding:0 8px}
+.tabs-track::-webkit-scrollbar{display:none}
+.tab{flex-shrink:0;background:none;color:rgba(255,255,255,0.55);font-size:13px;font-weight:500;padding:11px 14px;cursor:pointer;position:relative;white-space:nowrap;transition:color .2s;border:none}
+.tab.on{color:#fff;font-weight:700}
+.tab.on::after{content:'';position:absolute;bottom:0;left:14px;right:14px;height:2px;background:#fff;border-radius:2px}
+
+/* PAGES */
+.page{display:none;padding-top:calc(var(--H) + var(--T));padding-bottom:calc(var(--B) + 8px);min-height:100vh}
+.page.on{display:block}
+.spage{padding:16px}
+.spage h3{font-size:18px;font-weight:800;margin-bottom:16px}
+
+/* HERO */
+.hero{position:relative;overflow:hidden;height:260px}
+.hero-track{display:flex;height:100%;transition:transform .5s ease}
+.hero-slide{min-width:100%;height:100%;position:relative;display:flex;align-items:flex-end;padding:24px}
+.hero-slide .overlay{position:absolute;inset:0;background:rgba(0,0,0,0.3)}
+.hero-txt{position:relative;z-index:2}
+.hero-badge{display:inline-block;background:var(--red);color:#fff;font-size:10px;font-weight:700;letter-spacing:.1em;padding:3px 10px;border-radius:2px;margin-bottom:8px}
+.hero-txt h2{font-size:36px;font-weight:900;color:#fff;line-height:.95;margin-bottom:8px;text-shadow:0 2px 8px rgba(0,0,0,0.4)}
+.hero-txt p{font-size:13px;color:rgba(255,255,255,.9);margin-bottom:14px}
+.hero-txt button{background:#fff;color:var(--black);padding:9px 22px;font-size:12px;font-weight:700;letter-spacing:.08em;border-radius:2px}
+.hero-prev,.hero-next{position:absolute;top:50%;transform:translateY(-50%);background:rgba(255,255,255,.85);width:32px;height:32px;border-radius:50%;font-size:20px;display:flex;align-items:center;justify-content:center;z-index:10;border:none}
+.hero-prev{left:10px}.hero-next{right:10px}
+.hero-dots{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);display:flex;gap:5px;z-index:10}
+.hdot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.5);border:none;padding:0;transition:all .3s;cursor:pointer}
+.hdot.on{background:#fff;width:18px;border-radius:3px}
+
+/* SHIP BAR */
+.ship{background:#fff9f0;border:1px solid #ffe5b4;display:flex}
+.ship-item{flex:1;display:flex;align-items:center;gap:8px;padding:10px 12px;font-size:12px}
+.ship-item .ico{font-size:20px;flex-shrink:0}
+.ship-item strong{display:block;color:var(--red);font-size:12px}
+.ship-item span{color:var(--gray);font-size:11px}
+.ship-div{width:1px;background:#ffe5b4;margin:8px 0}
+
+/* CIRCLES */
+.circles{background:#fff;padding:14px 0 10px;margin-bottom:6px}
+.circles-track{display:flex;overflow-x:auto;gap:6px;padding:0 12px;scrollbar-width:none}
+.circles-track::-webkit-scrollbar{display:none}
+.citem{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:6px;width:68px;cursor:pointer}
+.cimg{width:58px;height:58px;border-radius:50%;overflow:hidden;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:26px}
+.citem span{font-size:10px;color:var(--black);text-align:center;line-height:1.3}
+
+/* TWO COLS */
+.two{display:flex;gap:4px;padding:0 4px;margin-bottom:4px}
+.msec{flex:1;background:#fff;border-radius:4px;padding:10px 8px 8px;overflow:hidden}
+.msec-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.mtitle{font-size:14px;font-weight:800}
+.mmore{font-size:20px;color:#ccc;background:none;border:none}
+.mgrid{display:grid;grid-template-columns:1fr 1fr;gap:4px}
+.mcard{cursor:pointer}
+.mcard-img{position:relative;aspect-ratio:1;border-radius:4px;overflow:hidden;margin-bottom:5px;display:flex;align-items:center;justify-content:center;font-size:40px}
+.mbadge{position:absolute;top:4px;left:4px;font-size:9px;font-weight:700;padding:2px 5px;border-radius:2px}
+.mbadge.flash{background:#ffd600;color:#1a1a1a}
+.mbadge.trend{background:#e8f5e9;color:#2e7d32}
+.mprice{font-size:12px;color:var(--gray)}
+.mprice strong{color:var(--black);font-size:12px}
+.red{color:var(--red)}
+.mprice.red strong{color:var(--red)}
+
+/* FOR YOU */
+.fy{background:#fff;margin-top:4px;padding:14px 0 0}
+.fy-title{font-size:18px;font-weight:800;text-align:center;margin-bottom:10px}
+.pgrid{display:grid;grid-template-columns:1fr 1fr;gap:2px}
+.pcard{cursor:pointer;background:#fff;position:relative}
+.pcard-img{position:relative;aspect-ratio:3/4;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:60px}
+.pcard-disc{position:absolute;top:8px;left:8px;background:var(--red);color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:2px}
+.pcard-new{position:absolute;top:8px;left:8px;background:#00b894;color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:2px}
+.pcard-wl{position:absolute;top:8px;right:8px;background:#fff;width:28px;height:28px;border-radius:50%;font-size:15px;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,.1);color:var(--gray);border:none;transition:color .2s}
+.pcard-wl.on{color:var(--red)}
+.pcard-info{padding:8px 10px 12px}
+.pcard-name{font-size:12px;color:var(--black);margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pcard-stars{font-size:11px;color:#f39c12;margin-bottom:4px}
+.pcard-stars span{color:var(--gray)}
+.pcard-prices{display:flex;align-items:center;gap:6px}
+.pnew{font-size:14px;font-weight:700;color:var(--red)}
+.pold{font-size:11px;color:var(--gray);text-decoration:line-through}
+
+/* CAT PAGE */
+.cat-wrap{display:flex;min-height:100vh}
+.cat-side{width:85px;background:var(--light);border-right:1px solid var(--border);flex-shrink:0;padding-top:8px}
+.cside{padding:14px 8px;font-size:12px;font-weight:500;text-align:center;cursor:pointer;border-bottom:1px solid var(--border);color:var(--gray);transition:all .2s}
+.cside.on{color:var(--black);font-weight:700;background:#fff;border-left:3px solid var(--black)}
+.cat-grid{flex:1;padding:8px;display:grid;grid-template-columns:1fr 1fr;gap:8px;align-content:start}
+
+/* PRODUCT PAGE */
+.prod-page{position:fixed;inset:0;background:#fff;z-index:300;overflow-y:auto;transform:translateX(100%);transition:transform .35s cubic-bezier(.25,.46,.45,.94);max-width:480px;left:50%;margin-left:-240px}
+@media(max-width:480px){.prod-page{left:0;margin-left:0}}
+.prod-page.open{transform:translateX(0)}
+.prod-hdr{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:#fff;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:10}
+.prod-hdr button:first-child{background:none;border:none;font-size:16px;font-weight:600;color:var(--black)}
+.prod-img{aspect-ratio:3/4;background:var(--light);display:flex;align-items:center;justify-content:center;font-size:120px}
+.prod-info{padding:16px}
+.prod-name{font-size:18px;font-weight:700;margin-bottom:6px}
+.prod-stars{font-size:13px;color:#f39c12;margin-bottom:10px}
+.prod-prices{display:flex;align-items:center;gap:10px;margin-bottom:20px}
+.prod-prices .pnew{font-size:22px}
+.prod-prices .pold{font-size:14px}
+.disc-tag{background:var(--red);color:#fff;font-size:11px;font-weight:700;padding:3px 8px;border-radius:3px}
+.psec{margin-bottom:18px}
+.psec-title{font-size:11px;font-weight:700;color:var(--gray);margin-bottom:10px;text-transform:uppercase;letter-spacing:.05em}
+.sizes{display:flex;gap:8px;flex-wrap:wrap}
+.sz{padding:7px 14px;border:1.5px solid var(--border);border-radius:4px;font-size:13px;font-weight:600;background:#fff;cursor:pointer;transition:all .2s}
+.sz.on{border-color:var(--black);background:var(--black);color:#fff}
+.clrs{display:flex;gap:8px;flex-wrap:wrap}
+.clr{width:28px;height:28px;border-radius:50%;border:2px solid transparent;cursor:pointer;transition:all .2s;outline:2px solid transparent}
+.clr.on{outline:2px solid var(--black);outline-offset:2px}
+.qty{display:flex;align-items:center}
+.qty button{width:38px;height:38px;border:1.5px solid var(--border);background:#fff;font-size:20px;font-weight:300;display:flex;align-items:center;justify-content:center;transition:background .2s}
+.qty button:hover{background:var(--light)}
+.qty span{width:50px;height:38px;border-top:1.5px solid var(--border);border-bottom:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700}
+.prod-acts{display:flex;gap:10px;margin:24px 0 12px}
+.btn-wl{flex:1;padding:14px;border:1.5px solid var(--border);background:#fff;font-size:14px;font-weight:700;border-radius:4px;transition:all .2s}
+.btn-wl.on{border-color:var(--red);color:var(--red)}
+.btn-add{flex:2;padding:14px;background:var(--black);color:#fff;border:none;font-size:14px;font-weight:700;border-radius:4px}
+.btn-buy{width:100%;padding:14px;background:var(--red);color:#fff;border:none;font-size:15px;font-weight:700;border-radius:4px;margin-bottom:20px}
+.prod-det{border-top:1px solid var(--border);padding-top:16px}
+.prod-det-title{font-size:14px;font-weight:700;margin-bottom:8px}
+.prod-det p{font-size:13px;color:var(--gray);line-height:1.7}
+
+/* CART */
+.cart-row{display:flex;align-items:center;gap:12px;background:#fff;padding:12px;margin-bottom:4px;border-radius:4px}
+.cart-row-img{width:70px;height:70px;border-radius:6px;overflow:hidden;flex-shrink:0;background:var(--light);font-size:36px;display:flex;align-items:center;justify-content:center}
+.cart-row-name{font-size:13px;font-weight:600;margin-bottom:2px}
+.cart-row-meta{font-size:11px;color:var(--gray);margin-bottom:6px}
+.cart-row-price{font-size:14px;font-weight:700;color:var(--red)}
+.cart-row-qty{display:flex;align-items:center;gap:8px;margin-top:6px}
+.cart-row-qty button{width:26px;height:26px;border:1px solid var(--border);background:#fff;font-size:16px;border-radius:4px;display:flex;align-items:center;justify-content:center}
+.cart-row-qty span{font-size:14px;font-weight:700;min-width:20px;text-align:center}
+.cart-row-del{background:none;color:#ccc;font-size:22px;padding:4px;flex-shrink:0}
+.cart-foot{position:sticky;bottom:var(--B);background:#fff;border-top:1px solid var(--border);padding:12px 16px}
+.cart-total{display:flex;justify-content:space-between;font-size:15px;font-weight:600;margin-bottom:10px}
+.co-btn{width:100%;padding:14px;background:var(--black);color:#fff;border:none;border-radius:4px;font-size:15px;font-weight:700}
+.empty{text-align:center;padding:60px 20px;color:var(--gray)}
+.empty div{font-size:56px;margin-bottom:12px}
+
+/* ME */
+.me{padding:24px 16px;text-align:center}
+.me-av{font-size:64px;margin-bottom:8px}
+.me-name{font-size:18px;font-weight:700;margin-bottom:4px}
+.me-sub{font-size:13px;color:var(--gray);margin-bottom:20px}
+.me-signin{background:var(--black);color:#fff;border:none;padding:12px 40px;font-size:14px;font-weight:700;border-radius:4px;margin-bottom:24px}
+.me-menu{background:#fff;border-radius:8px;text-align:left;overflow:hidden}
+.me-item{padding:15px 16px;font-size:14px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s}
+.me-item:last-child{border-bottom:none}
+.me-item:hover{background:var(--light)}
+
+/* SIDEBAR */
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:298;opacity:0;pointer-events:none;transition:opacity .3s}
+.ov.on{opacity:1;pointer-events:all}
+.sidebar{position:fixed;top:0;left:0;width:260px;height:100vh;background:#fff;z-index:299;transform:translateX(-100%);transition:transform .3s;overflow-y:auto}
+.sidebar.on{transform:translateX(0)}
+.sb-head{display:flex;justify-content:space-between;align-items:center;padding:16px;background:var(--black)}
+.sb-head span{font-size:20px;font-weight:900;color:#fff;letter-spacing:3px}
+.sb-head button{background:none;border:none;color:#fff;font-size:20px}
+.sb-login{display:flex;align-items:center;gap:10px;padding:16px;font-size:14px;font-weight:600;border-bottom:1px solid var(--border);cursor:pointer}
+.sb-links div{padding:14px 16px;font-size:14px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s}
+.sb-links div:hover{background:var(--light)}
+
+/* BOTTOM NAV */
+.bnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;height:var(--B);background:#fff;border-top:1px solid var(--border);display:flex;z-index:200}
+.bn{flex:1;background:none;border:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--gray);font-size:10px;font-weight:500;transition:color .2s;position:relative}
+.bn.on{color:var(--black)}
+.bn svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:2}
+.bn-badge{position:absolute;top:6px;right:50%;margin-right:-18px;background:var(--red);color:#fff;font-size:9px;font-weight:700;min-width:16px;height:16px;border-radius:8px;display:none;align-items:center;justify-content:center;padding:0 3px}
+.bn-badge.on{display:flex}
+
+/* TOAST */
+.toast{position:fixed;bottom:calc(var(--B) + 16px);left:50%;transform:translateX(-50%) translateY(20px);background:rgba(0,0,0,.85);color:#fff;padding:10px 22px;border-radius:20px;font-size:13px;font-weight:500;z-index:400;opacity:0;transition:all .3s ease;white-space:nowrap;pointer-events:none}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="hdr">
+  <div class="hdr-l">
+    <button class="iBtn" onclick="toggleSB()"><svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+    <button class="iBtn" onclick="toast('No new messages')"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></button>
+  </div>
+  <div class="hdr-logo">ZYNA</div>
+  <div class="hdr-r">
+    <button class="iBtn" onclick="toggleSearch()"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></button>
+    <button class="iBtn" onclick="showPage('wl')"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg><span class="badge" id="wlB">0</span></button>
+    <button class="iBtn" onclick="showPage('cart')"><svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg><span class="badge" id="cartB">0</span></button>
+  </div>
+</header>
+
+<!-- SEARCH -->
+<div class="srchBar" id="srchBar">
+  <input type="text" placeholder="Search products..." id="srchIn" oninput="doSearch(this.value)"/>
+  <button onclick="toggleSearch()">✕</button>
+</div>
+<div class="srchRes" id="srchRes"></div>
+
+<!-- TABS -->
+<div class="tabs">
+  <div class="tabs-track">
+    <button class="tab on" data-c="all" onclick="switchTab(this)">All</button>
+    <button class="tab" data-c="women" onclick="switchTab(this)">Women</button>
+    <button class="tab" data-c="kids" onclick="switchTab(this)">Kids</button>
+    <button class="tab" data-c="men" onclick="switchTab(this)">Men</button>
+    <button class="tab" data-c="curve" onclick="switchTab(this)">Curve</button>
+    <button class="tab" data-c="beauty" onclick="switchTab(this)">Beauty</button>
+    <button class="tab" data-c="accessories" onclick="switchTab(this)">Accessories</button>
+    <button class="tab" data-c="shoes" onclick="switchTab(this)">Shoes</button>
+  </div>
+</div>
+
+<!-- SHOP PAGE -->
+<main class="page on" id="pg-shop">
+  <div class="hero">
+    <div class="hero-track" id="heroTrack">
+      <div class="hero-slide" style="background:linear-gradient(160deg,#e8d5c4,#c9a882)">
+        <div class="overlay"></div>
+        <div class="hero-txt"><div class="hero-badge">NEW SEASON</div><h2>CITY<br>STROLL</h2><p>Casual chic for daily errands</p><button onclick="switchTabN('women')">SHOP NOW</button></div>
+      </div>
+      <div class="hero-slide" style="background:linear-gradient(160deg,#fce4ec,#f48fb1)">
+        <div class="overlay"></div>
+        <div class="hero-txt"><div class="hero-badge">TRENDING</div><h2>SUMMER<br>VIBES</h2><p>Fresh styles up to <strong>70% OFF</strong></p><button onclick="switchTabN('women')">SHOP NOW</button></div>
+      </div>
+      <div class="hero-slide" style="background:linear-gradient(160deg,#e3f2fd,#64b5f6)">
+        <div class="overlay"></div>
+        <div class="hero-txt"><div class="hero-badge">HOT</div><h2>MEN'S<br>STREET</h2><p>Fresh drops every week</p><button onclick="switchTabN('men')">SHOP NOW</button></div>
+      </div>
+    </div>
+    <button class="hero-prev" onclick="hSlide(-1)">‹</button>
+    <button class="hero-next" onclick="hSlide(1)">›</button>
+    <div class="hero-dots" id="heroDots">
+      <button class="hdot on" onclick="hGo(0)"></button>
+      <button class="hdot" onclick="hGo(1)"></button>
+      <button class="hdot" onclick="hGo(2)"></button>
+    </div>
+  </div>
+
+  <div class="ship">
+    <div class="ship-item"><span class="ico">🚚</span><div><strong>Free Shipping</strong><span>Orders over EGP 500</span></div></div>
+    <div class="ship-div"></div>
+    <div class="ship-item"><span class="ico">💰</span><div><strong>Low Price</strong><span>Under EGP 99</span></div></div>
+  </div>
+
+  <div class="circles">
+    <div class="circles-track">
+      <div class="citem" onclick="switchTabN('women')"><div class="cimg" style="background:linear-gradient(135deg,#fce4ec,#f48fb1)">👗</div><span>Women</span></div>
+      <div class="citem" onclick="switchTabN('men')"><div class="cimg" style="background:linear-gradient(135deg,#e3f2fd,#64b5f6)">👔</div><span>Men</span></div>
+      <div class="citem" onclick="switchTabN('kids')"><div class="cimg" style="background:linear-gradient(135deg,#e8f5e9,#81c784)">🧒</div><span>Kids</span></div>
+      <div class="citem" onclick="switchTabN('curve')"><div class="cimg" style="background:linear-gradient(135deg,#fff3e0,#ffb74d)">✨</div><span>Curve</span></div>
+      <div class="citem" onclick="switchTabN('accessories')"><div class="cimg" style="background:linear-gradient(135deg,#f3e5f5,#ce93d8)">👜</div><span>Bags</span></div>
+      <div class="citem" onclick="switchTabN('beauty')"><div class="cimg" style="background:linear-gradient(135deg,#fff8e1,#ffd54f)">💄</div><span>Beauty</span></div>
+      <div class="citem" onclick="switchTabN('shoes')"><div class="cimg" style="background:linear-gradient(135deg,#fbe9e7,#ff8a65)">👟</div><span>Shoes</span></div>
+      <div class="citem" onclick="toast('Home section coming soon!')"><div class="cimg" style="background:linear-gradient(135deg,#e8eaf6,#9fa8da)">🏠</div><span>Home</span></div>
+    </div>
+  </div>
+
+  <div class="two">
+    <div class="msec">
+      <div class="msec-head"><span class="mtitle">Super🔥Deals</span><button class="mmore">›</button></div>
+      <div class="mgrid">
+        <div class="mcard" onclick="openProd(0)"><div class="mcard-img" style="background:linear-gradient(135deg,#ffecd2,#fcb69f)">👗<span class="mbadge flash">⚡ -60%</span></div><div class="mprice"><s>EGP 750</s> <strong class="red">EGP 299</strong></div></div>
+        <div class="mcard" onclick="openProd(6)"><div class="mcard-img" style="background:linear-gradient(135deg,#a1c4fd,#c2e9fb)">👔<span class="mbadge flash">⚡ -45%</span></div><div class="mprice"><s>EGP 360</s> <strong class="red">EGP 199</strong></div></div>
+      </div>
+    </div>
+    <div class="msec">
+      <div class="msec-head"><span class="mtitle"><span style="color:#7c3aed">T</span>rends</span><button class="mmore">›</button></div>
+      <div class="mgrid">
+        <div class="mcard" onclick="openProd(4)"><div class="mcard-img" style="background:linear-gradient(135deg,#fff9c4,#ffd600)">👗<span class="mbadge trend">📈 Rising</span></div><div class="mprice"><strong>EGP 320</strong></div></div>
+        <div class="mcard" onclick="openProd(5)"><div class="mcard-img" style="background:linear-gradient(135deg,#f5f5f5,#eee)">👗<span class="mbadge trend">📈 Hot</span></div><div class="mprice"><strong>EGP 450</strong></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="two">
+    <div class="msec">
+      <div class="msec-head"><span class="mtitle">Hot Seller</span><button class="mmore">›</button></div>
+      <div class="mgrid">
+        <div class="mcard" onclick="openProd(10)"><div class="mcard-img" style="background:linear-gradient(135deg,#efebe9,#d7ccc8)">👟</div><div class="mprice"><strong>EGP 420</strong></div></div>
+        <div class="mcard" onclick="openProd(11)"><div class="mcard-img" style="background:linear-gradient(135deg,#f6d365,#fda085)">👜</div><div class="mprice"><strong>EGP 349</strong></div></div>
+      </div>
+    </div>
+    <div class="msec">
+      <div class="msec-head"><span class="mtitle">Brand Zone🔶</span><button class="mmore">›</button></div>
+      <div class="mgrid">
+        <div class="mcard" onclick="openProd(12)"><div class="mcard-img" style="background:linear-gradient(135deg,#fce4ec,#f48fb1)">💄</div><div class="mprice red"><strong>EGP 800</strong></div></div>
+        <div class="mcard" onclick="openProd(13)"><div class="mcard-img" style="background:linear-gradient(135deg,#f5f5f5,#e0e0e0)">💅</div><div class="mprice"><strong>EGP 650</strong></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="fy">
+    <div class="fy-title">For You</div>
+    <div class="pgrid" id="fyGrid"></div>
+  </div>
+</main>
+
+<!-- CATEGORY PAGE -->
+<main class="page" id="pg-category">
+  <div class="cat-wrap">
+    <div class="cat-side">
+      <div class="cside on" onclick="setCat(this,'all')">All</div>
+      <div class="cside" onclick="setCat(this,'women')">Women</div>
+      <div class="cside" onclick="setCat(this,'men')">Men</div>
+      <div class="cside" onclick="setCat(this,'kids')">Kids</div>
+      <div class="cside" onclick="setCat(this,'curve')">Curve</div>
+      <div class="cside" onclick="setCat(this,'beauty')">Beauty</div>
+      <div class="cside" onclick="setCat(this,'accessories')">Access.</div>
+      <div class="cside" onclick="setCat(this,'shoes')">Shoes</div>
+    </div>
+    <div class="cat-grid" id="catGrid"></div>
+  </div>
+</main>
+
+<!-- TRENDS PAGE -->
+<main class="page" id="pg-trends">
+  <div class="spage"><h3>🔥 Trending Now</h3><div class="pgrid" id="trendGrid"></div></div>
+</main>
+
+<!-- CART PAGE -->
+<main class="page" id="pg-cart">
+  <div class="spage"><h3>🛒 My Cart</h3><div id="cartItems"></div><div class="cart-foot" id="cartFoot" style="display:none"><div class="cart-total"><span>Total</span><span class="red" id="cartTot">EGP 0</span></div><button class="co-btn" onclick="toast('Checkout coming soon! 🎉')">Checkout →</button></div></div>
+</main>
+
+<!-- WISHLIST PAGE -->
+<main class="page" id="pg-wl">
+  <div class="spage"><h3>❤️ My Wishlist</h3><div class="pgrid" id="wlGrid"></div><div class="empty" id="wlEmpty" style="display:none"><div>🤍</div><p>No items yet</p></div></div>
+</main>
+
+<!-- ME PAGE -->
+<main class="page" id="pg-me">
+  <div class="me">
+    <div class="me-av">👤</div>
+    <div class="me-name">Sign In / Register</div>
+    <div class="me-sub">Get exclusive deals & track your orders</div>
+    <button class="me-signin" onclick="toast('Sign in coming soon!')">Sign In</button>
+    <div class="me-menu">
+      <div class="me-item" onclick="toast('My Orders coming soon!')">📦 My Orders</div>
+      <div class="me-item" onclick="showPage('wl')">❤️ Wishlist</div>
+      <div class="me-item" onclick="toast('Coupons coming soon!')">💰 Coupons & Offers</div>
+      <div class="me-item" onclick="toast('Addresses coming soon!')">📍 My Addresses</div>
+      <div class="me-item" onclick="toast('Settings coming soon!')">⚙️ Settings</div>
+      <div class="me-item" onclick="toast('Language coming soon!')">🌐 Language & Region</div>
+    </div>
+  </div>
+</main>
+
+<!-- PRODUCT PAGE -->
+<div class="prod-page" id="prodPage">
+  <div class="prod-hdr">
+    <button onclick="closeProd()">‹ Back</button>
+    <button class="iBtn" style="color:var(--black)" onclick="showPage('cart')"><svg viewBox="0 0 24 24" style="width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg><span class="badge" id="cartB2">0</span></button>
+  </div>
+  <div class="prod-img" id="prodEmoji"></div>
+  <div class="prod-info">
+    <div class="prod-name" id="prodName"></div>
+    <div class="prod-stars" id="prodStars"></div>
+    <div class="prod-prices"><span class="pnew" id="prodPrice"></span><span class="pold" id="prodOld"></span><span class="disc-tag" id="prodDisc"></span></div>
+    <div class="psec"><div class="psec-title">Size</div><div class="sizes" id="prodSizes"></div></div>
+    <div class="psec"><div class="psec-title">Color</div><div class="clrs" id="prodColors"></div></div>
+    <div class="psec"><div class="psec-title">Quantity</div><div class="qty"><button onclick="chQty(-1)">−</button><span id="qtyN">1</span><button onclick="chQty(1)">+</button></div></div>
+    <div class="prod-acts">
+      <button class="btn-wl" id="wlBtn" onclick="togProdWL()">♡ Wishlist</button>
+      <button class="btn-add" onclick="addCurrent()">Add to Cart</button>
+    </div>
+    <button class="btn-buy" onclick="buyNow()">Buy Now</button>
+    <div class="prod-det"><div class="prod-det-title">Product Details</div><p id="prodDet"></p></div>
+  </div>
+</div>
+
+<!-- SIDEBAR -->
+<div class="ov" id="sbOv" onclick="toggleSB()"></div>
+<div class="sidebar" id="sidebar">
+  <div class="sb-head"><span>ZYNA</span><button onclick="toggleSB()">✕</button></div>
+  <div class="sb-login" onclick="toast('Sign in coming soon!')">👤 Sign In / Register</div>
+  <div class="sb-links">
+    <div onclick="switchTabN('women');toggleSB()">👗 Women</div>
+    <div onclick="switchTabN('men');toggleSB()">👔 Men</div>
+    <div onclick="switchTabN('kids');toggleSB()">🧒 Kids</div>
+    <div onclick="switchTabN('beauty');toggleSB()">💄 Beauty</div>
+    <div onclick="switchTabN('accessories');toggleSB()">👜 Accessories</div>
+    <div onclick="switchTabN('shoes');toggleSB()">👟 Shoes</div>
+    <div onclick="toast('Track order coming soon!')">📦 Track Order</div>
+    <div onclick="toast('Returns coming soon!')">↩️ Returns</div>
+    <div onclick="toast('Help coming soon!')">💬 Help Center</div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toastEl"></div>
+
+<!-- BOTTOM NAV -->
+<nav class="bnav">
+  <button class="bn on" data-p="shop" onclick="showPage('shop',this)"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span>Shop</span></button>
+  <button class="bn" data-p="category" onclick="showPage('category',this)"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg><span>Category</span></button>
+  <button class="bn" data-p="trends" onclick="showPage('trends',this)"><svg viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg><span>Trends</span></button>
+  <button class="bn" data-p="cart" onclick="showPage('cart',this)"><svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg><span class="bn-badge" id="bnB">0</span><span>Cart</span></button>
+  <button class="bn" data-p="me" onclick="showPage('me',this)"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span>Me</span></button>
+</nav>
+
+<script>
+// =========================================
+// PRODUCTS DATA
+// =========================================
+const P=[
+  {id:0,cat:'women',name:'Floral Wrap Dress',img:'https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=400&q=70',price:299,old:750,disc:'-60%',rating:'4.8 (2.4k)',sizes:['XS','S','M','L','XL'],colors:['#ff9a9e','#a1c4fd','#ffeaa7'],det:'Lightweight floral wrap dress. 100% viscose. Machine washable. True to size.'},
+  {id:1,cat:'women',name:'Satin Slip Dress',img:'https://images.unsplash.com/photo-1496747611176-843222e1e57c?w=400&q=70',price:389,old:899,disc:'-57%',rating:'4.9 (5.7k)',sizes:['XS','S','M','L'],colors:['#2d3436','#fd79a8','#6c5ce7','#fdcb6e'],det:'Premium satin slip dress with adjustable straps. Elegant and versatile.'},
+  {id:2,cat:'women',name:'Linen Crop Top',img:'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&q=70',price:159,old:280,disc:'-43%',rating:'4.7 (876)',sizes:['S','M','L','XL'],colors:['#55efc4','#ffeaa7','#fd79a8'],det:'Breathable linen crop top. Perfect for summer. Relaxed fit.'},
+  {id:3,cat:'women',name:'Mini Pleated Skirt',img:'https://images.unsplash.com/photo-1583496661160-fb5218afa740?w=400&q=70',price:179,old:599,disc:'-70%',rating:'4.9 (4.1k)',sizes:['XS','S','M','L','XL'],colors:['#2d3436','#fd79a8','#a29bfe','#fdcb6e'],det:'Trendy mini pleated skirt. High waist. Great for casual and evening.'},
+  {id:4,cat:'women',name:'Yellow Puff Dress',img:'https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=400&q=70',price:320,old:650,disc:'-51%',rating:'4.8 (3.2k)',sizes:['XS','S','M','L'],colors:['#ffd600','#ff8fab','#fff'],det:'Romantic puff sleeve dress. Statement style for every occasion.'},
+  {id:5,cat:'women',name:'White Maxi Dress',img:'https://images.unsplash.com/photo-1539109136881-3be0616acf4b?w=400&q=70',price:450,old:900,disc:'-50%',rating:'4.7 (2.8k)',sizes:['XS','S','M','L','XL'],colors:['#fff','#eeeeee'],det:'Flowy white maxi dress. Perfect for beach and evening events.'},
+  {id:6,cat:'men',name:'Oversized Street Tee',img:'https://images.unsplash.com/photo-1617137968427-85924c800a22?w=400&q=70',price:199,old:360,disc:'-45%',rating:'4.6 (1.1k)',sizes:['S','M','L','XL','XXL'],colors:['#2d3436','#fff','#74b9ff','#636e72'],det:'Premium cotton oversized tee. Relaxed streetwear fit. Unisex.'},
+  {id:7,cat:'men',name:'Slim Fit Hoodie',img:'https://images.unsplash.com/photo-1556821840-3a63f15732ce?w=400&q=70',price:449,old:749,disc:'-40%',rating:'4.7 (2.9k)',sizes:['S','M','L','XL','XXL'],colors:['#636e72','#2d3436','#74b9ff'],det:'Slim fit fleece hoodie. Kangaroo pocket. Ribbed cuffs and hem.'},
+  {id:8,cat:'men',name:'Cargo Joggers',img:'https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=400&q=70',price:350,old:599,disc:'-42%',rating:'4.5 (890)',sizes:['S','M','L','XL','XXL'],colors:['#2d3436','#636e72','#8d6e63'],det:'Multi-pocket cargo joggers. Elastic waist with drawstring. Tapered fit.'},
+  {id:9,cat:'men',name:'Linen Shirt',img:'https://images.unsplash.com/photo-1598033129183-c4f50c736f10?w=400&q=70',price:280,old:450,disc:'-38%',rating:'4.8 (1.5k)',sizes:['S','M','L','XL'],colors:['#fff','#f5f0e8','#74b9ff','#2d3436'],det:'Breathable linen shirt. Button-down collar. Relaxed summer fit.'},
+  {id:10,cat:'shoes',name:'Mary Jane Flats',img:'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&q=70',price:420,old:750,disc:'-44%',rating:'4.6 (2.1k)',sizes:['36','37','38','39','40','41'],colors:['#2d3436','#c8a96e','#fff'],det:'Classic Mary Jane flats. Cushioned insole. Leather upper.'},
+  {id:11,cat:'accessories',name:'Mini Shoulder Bag',img:'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=400&q=70',price:349,old:780,disc:'-55%',rating:'4.9 (3.2k)',sizes:['One Size'],colors:['#2d3436','#c8a96e','#e17055'],det:'Compact shoulder bag with chain strap. Faux leather. Multiple pockets.'},
+  {id:12,cat:'beauty',name:'Rare Beauty Lip Gloss',img:'https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=400&q=70',price:800,old:null,disc:null,rating:'4.9 (8.1k)',sizes:['One Size'],colors:['#ff6b9d','#e17055','#fdcb6e'],det:'Non-sticky lip gloss with plumping effect. Long-lasting. 8 shades.'},
+  {id:13,cat:'beauty',name:'MAC Foundation',img:'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=400&q=70',price:650,old:null,disc:null,rating:'4.8 (5.4k)',sizes:['30ml'],colors:['#f5e6d3','#e8c9a0','#c4956a','#8d6e63'],det:'Full coverage foundation. SPF 15. 40 shades. 24hr wear.'},
+  {id:14,cat:'kids',name:'Kids Cartoon Tee',img:'https://images.unsplash.com/photo-1519238263530-99bdd11df2ea?w=400&q=70',price:129,old:220,disc:'-41%',rating:'4.7 (1.4k)',sizes:['2Y','4Y','6Y','8Y','10Y','12Y'],colors:['#ff7675','#74b9ff','#55efc4','#ffeaa7'],det:'Soft cotton kids tee with fun cartoon print. Easy care fabric.'},
+  {id:15,cat:'kids',name:'Kids Denim Set',img:'https://images.unsplash.com/photo-1471286174890-9c112ac6476c?w=400&q=70',price:299,old:499,disc:'-40%',rating:'4.6 (980)',sizes:['2Y','4Y','6Y','8Y','10Y'],colors:['#74b9ff','#2d3436'],det:'Matching denim jacket and pants set. Comfortable stretch denim.'},
+  {id:16,cat:'curve',name:'Plus Size Wrap Dress',img:'https://images.unsplash.com/photo-1594938298603-c8148c4b4a5a?w=400&q=70',price:349,old:699,disc:'-50%',rating:'4.8 (2.3k)',sizes:['1X','2X','3X','4X','5X'],colors:['#ff9a9e','#a1c4fd','#2d3436'],det:'Flattering wrap dress for curves. Adjustable waist tie. Midi length.'},
+  {id:17,cat:'curve',name:'Plus Size Wide Leg Pants',img:'https://images.unsplash.com/photo-1509631179647-0177331693ae?w=400&q=70',price:280,old:520,disc:'-46%',rating:'4.7 (1.8k)',sizes:['1X','2X','3X','4X'],colors:['#2d3436','#636e72','#8d6e63'],det:'High waist wide leg trousers. Elastic waistband. Flowy fabric.'},
+  {id:18,cat:'shoes',name:'White Sneakers',img:'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=400&q=70',price:550,old:850,disc:'-35%',rating:'4.8 (4.2k)',sizes:['36','37','38','39','40','41','42','43'],colors:['#fff','#2d3436','#74b9ff'],det:'Clean white leather sneakers. Cushioned sole. Everyday essential.'},
+  {id:19,cat:'accessories',name:'Straw Sun Hat',img:'https://images.unsplash.com/photo-1521369909029-2afed882baee?w=400&q=70',price:249,old:499,disc:'-50%',rating:'4.6 (987)',sizes:['One Size'],colors:['#deb887','#2d3436'],det:'Wide brim straw hat. Adjustable inner band. UV protection.'},
+];
+
+// =========================================
+// STATE
+// =========================================
+let cart=[],wl=[],curProd=null,curQty=1,selSz=null,selClr=null,hIdx=0;
+
+// =========================================
+// INIT
+// =========================================
+window.addEventListener('DOMContentLoaded',()=>{
+  renderFY('all');
+  renderCat('all');
+  renderTrends();
+  setInterval(()=>hSlide(1),3500);
+});
+
+// =========================================
+// HERO
+// =========================================
+function hSlide(d){
+  const n=3;
+  hIdx=(hIdx+d+n)%n;
+  hGo(hIdx);
+}
+function hGo(i){
+  hIdx=i;
+  document.getElementById('heroTrack').style.transform=`translateX(-${i*100}%)`;
+  document.querySelectorAll('.hdot').forEach((d,j)=>d.classList.toggle('on',j===i));
+}
+
+// =========================================
+// PAGES
+// =========================================
+function showPage(name,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
+  const pg=document.getElementById('pg-'+name);
+  if(pg)pg.classList.add('on');
+  document.querySelectorAll('.bn').forEach(b=>b.classList.remove('on'));
+  if(btn)btn.classList.add('on');
+  else{const m=document.querySelector(`.bn[data-p="${name}"]`);if(m)m.classList.add('on');}
+  if(name==='cart')renderCart();
+  if(name==='wl')renderWL();
+  window.scrollTo(0,0);
+}
+
+// =========================================
+// TABS
+// =========================================
+function switchTab(btn){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  btn.classList.add('on');
+  renderFY(btn.dataset.c);
+  showPage('shop');
+}
+function switchTabN(cat){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('on',t.dataset.c===cat));
+  renderFY(cat);
+  showPage('shop');
+  window.scrollTo(0,0);
+}
+
+// =========================================
+// RENDER
+// =========================================
+function renderFY(cat='all'){
+  const list=cat==='all'?P:P.filter(p=>p.cat===cat);
+  document.getElementById('fyGrid').innerHTML=list.map(pCard).join('');
+}
+function renderCat(cat='all'){
+  const list=cat==='all'?P:P.filter(p=>p.cat===cat);
+  document.getElementById('catGrid').innerHTML=list.map(pCard).join('');
+}
+function renderTrends(){
+  const t=P.filter((_,i)=>[4,5,1,3,7,16].includes(i));
+  document.getElementById('trendGrid').innerHTML=t.map(pCard).join('');
+}
+function pCard(p){
+  const inWL=wl.some(w=>w.id===p.id);
+  return`<div class="pcard" onclick="openProd(${p.id})">
+    <div class="pcard-img">
+      <img src="${p.img}" alt="${p.name}" loading="lazy"/>
+      ${p.disc?`<span class="pcard-disc">${p.disc}</span>`:`<span class="pcard-new">NEW</span>`}
+      <button class="pcard-wl${inWL?' on':''}" onclick="event.stopPropagation();togWL(${p.id},this)">${inWL?'♥':'♡'}</button>
+    </div>
+    <div class="pcard-info">
+      <div class="pcard-name">${p.name}</div>
+      <div class="pcard-stars">★★★★★ <span>${p.rating}</span></div>
+      <div class="pcard-prices"><span class="pnew">EGP ${p.price.toLocaleString()}</span>${p.old?`<span class="pold">EGP ${p.old.toLocaleString()}</span>`:''}</div>
+    </div>
+  </div>`;
+}
+function setCat(el,cat){
+  document.querySelectorAll('.cside').forEach(c=>c.classList.remove('on'));
+  el.classList.add('on');
+  renderCat(cat);
+}
+
+// =========================================
+// PRODUCT PAGE
+// =========================================
+function openProd(id){
+  const p=P.find(x=>x.id===id);
+  if(!p)return;
+  curProd=p;curQty=1;selSz=p.sizes[0];selClr=p.colors[0];
+  document.getElementById('prodEmoji').innerHTML=`<img src="${p.img}" alt="${p.name}" style="width:100%;height:100%;object-fit:cover;aspect-ratio:3/4"/>`;
+  document.getElementById('prodName').textContent=p.name;
+  document.getElementById('prodStars').textContent=`★★★★★ ${p.rating}`;
+  document.getElementById('prodPrice').textContent=`EGP ${p.price.toLocaleString()}`;
+  document.getElementById('prodOld').textContent=p.old?`EGP ${p.old.toLocaleString()}`:'';
+  document.getElementById('prodDisc').textContent=p.disc||'';
+  document.getElementById('prodDisc').style.display=p.disc?'inline':'none';
+  document.getElementById('prodDet').textContent=p.det;
+  document.getElementById('qtyN').textContent=1;
+  document.getElementById('prodSizes').innerHTML=p.sizes.map(s=>`<button class="sz${s===selSz?' on':''}" onclick="selSize(this,'${s}')">${s}</button>`).join('');
+  document.getElementById('prodColors').innerHTML=p.colors.map((c,i)=>`<button class="clr${i===0?' on':''}" style="background:${c};${c==='#fff'||c==='#ffffff'?'border-color:#ddd':''}" onclick="selColor(this,'${c}')"></button>`).join('');
+  const inWL=wl.some(w=>w.id===p.id);
+  const wb=document.getElementById('wlBtn');
+  wb.textContent=inWL?'♥ Wishlisted':'♡ Wishlist';
+  wb.classList.toggle('on',inWL);
+  document.getElementById('prodPage').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeProd(){
+  document.getElementById('prodPage').classList.remove('open');
+  document.body.style.overflow='';
+}
+function selSize(btn,sz){
+  document.querySelectorAll('.sz').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');selSz=sz;
+}
+function selColor(btn,c){
+  document.querySelectorAll('.clr').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');selClr=c;
+}
+function chQty(d){
+  curQty=Math.max(1,Math.min(10,curQty+d));
+  document.getElementById('qtyN').textContent=curQty;
+}
+function addCurrent(){
+  if(!curProd)return;
+  if(!selSz){toast('Please select a size');return;}
+  const key=`${curProd.id}-${selSz}-${selClr}`;
+  const ex=cart.find(i=>i.key===key);
+  if(ex)ex.qty+=curQty;
+  else cart.push({key,id:curProd.id,name:curProd.name,img:curProd.img,price:curProd.price,size:selSz,qty:curQty});
+  updCartB();toast('✅ Added to cart!');closeProd();
+}
+function buyNow(){addCurrent();setTimeout(()=>showPage('cart'),300);}
+function togProdWL(){
+  if(!curProd)return;
+  togWL(curProd.id);
+  const inWL=wl.some(w=>w.id===curProd.id);
+  const wb=document.getElementById('wlBtn');
+  wb.textContent=inWL?'♥ Wishlisted':'♡ Wishlist';
+  wb.classList.toggle('on',inWL);
+}
+
+// =========================================
+// CART
+// =========================================
+function updCartB(){
+  const t=cart.reduce((s,i)=>s+i.qty,0);
+  ['cartB','cartB2','bnB'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(!el)return;
+    el.textContent=t;
+    el.classList.toggle('on',t>0);
+    if(id==='bnB')el.style.display=t>0?'flex':'none';
+  });
+}
+function renderCart(){
+  const c=document.getElementById('cartItems'),f=document.getElementById('cartFoot');
+  if(!c)return;
+  if(!cart.length){c.innerHTML='<div class="empty"><div>🛒</div><p>Your cart is empty</p></div>';f.style.display='none';return;}
+  const tot=cart.reduce((s,i)=>s+i.price*i.qty,0);
+  c.innerHTML=cart.map((item,i)=>`<div class="cart-row">
+    <div class="cart-row-img"><img src="${item.img}" alt="${item.name}" style="width:100%;height:100%;object-fit:cover"/></div>
+    <div style="flex:1">
+      <div class="cart-row-name">${item.name}</div>
+      <div class="cart-row-meta">Size: ${item.size}</div>
+      <div class="cart-row-price">EGP ${(item.price*item.qty).toLocaleString()}</div>
+      <div class="cart-row-qty">
+        <button onclick="chCartQ(${i},-1)">−</button>
+        <span>${item.qty}</span>
+        <button onclick="chCartQ(${i},1)">+</button>
+      </div>
+    </div>
+    <button class="cart-row-del" onclick="delCart(${i})">×</button>
+  </div>`).join('');
+  f.style.display='block';
+  document.getElementById('cartTot').textContent=`EGP ${tot.toLocaleString()}`;
+}
+function chCartQ(i,d){cart[i].qty=Math.max(1,cart[i].qty+d);updCartB();renderCart();}
+function delCart(i){cart.splice(i,1);updCartB();renderCart();}
+
+// =========================================
+// WISHLIST
+// =========================================
+function togWL(id,btn){
+  const p=P.find(x=>x.id===id);
+  if(!p)return;
+  const i=wl.findIndex(w=>w.id===id);
+  if(i===-1){wl.push(p);if(btn){btn.textContent='♥';btn.classList.add('on');}toast('❤️ Added to wishlist!');}
+  else{wl.splice(i,1);if(btn){btn.textContent='♡';btn.classList.remove('on');}toast('Removed from wishlist');}
+  const wb=document.getElementById('wlB');
+  wb.textContent=wl.length;wb.classList.toggle('on',wl.length>0);
+  if(document.getElementById('pg-wl').classList.contains('on'))renderWL();
+}
+function renderWL(){
+  const g=document.getElementById('wlGrid'),e=document.getElementById('wlEmpty');
+  if(!g)return;
+  if(!wl.length){g.innerHTML='';e.style.display='block';}
+  else{e.style.display='none';g.innerHTML=wl.map(pCard).join('');}
+}
+
+// =========================================
+// SEARCH
+// =========================================
+function toggleSearch(){
+  const b=document.getElementById('srchBar'),r=document.getElementById('srchRes');
+  b.classList.toggle('open');
+  if(b.classList.contains('open'))document.getElementById('srchIn').focus();
+  else{r.classList.remove('open');document.getElementById('srchIn').value='';}
+}
+function doSearch(v){
+  const r=document.getElementById('srchRes');
+  if(!v.trim()){r.classList.remove('open');return;}
+  const q=v.toLowerCase();
+  const m=P.filter(p=>p.name.toLowerCase().includes(q)||p.cat.toLowerCase().includes(q));
+  if(!m.length){r.innerHTML=`<div class="srch-none">No results for "${v}"</div>`;}
+  else{r.innerHTML=m.map(p=>`<div class="srchItem" onclick="toggleSearch();openProd(${p.id})"><div class="srchItem-img"><img src="${p.img}" alt="${p.name}" style="width:100%;height:100%;object-fit:cover"/></div><div><div class="srchItem-name">${p.name}</div><div class="srchItem-price">EGP ${p.price.toLocaleString()}</div></div></div>`).join('');}
+  r.classList.add('open');
+}
+
+// =========================================
+// SIDEBAR
+// =========================================
+function toggleSB(){
+  document.getElementById('sidebar').classList.toggle('on');
+  document.getElementById('sbOv').classList.toggle('on');
+}
+
+// =========================================
+// TOAST
+// =========================================
+let tT;
+function toast(msg){
+  const el=document.getElementById('toastEl');
+  el.textContent=msg;el.classList.add('on');
+  clearTimeout(tT);tT=setTimeout(()=>el.classList.remove('on'),2500);
+}
+</script>
+</body>
+</html>
