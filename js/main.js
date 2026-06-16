@@ -139,3 +139,4 @@ function showToast(msg) {
 function toggleWishlistPage() {
   showToast('❤️ Wishlist coming soon!');
 }
+
